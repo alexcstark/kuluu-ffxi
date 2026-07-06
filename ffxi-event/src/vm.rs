@@ -55,6 +55,10 @@ const OP_EXECEND: u8 = 0x21;
 const OP_MESWAIT: u8 = 0x23;
 const OP_QUERY: u8 = 0x24;
 const OP_QUERYWAIT: u8 = 0x25;
+const OP_REQSET: u8 = 0x27;
+const OP_REQSET_CHECKED: u8 = 0x28;
+const OP_REQSET_PRIORITY: u8 = 0x29;
+const OP_REQWAIT: u8 = 0x2A;
 const OP_SETBITWORK: u8 = 0x40;
 const OP_GETBITWORK: u8 = 0x41;
 const OP_SENDTAG: u8 = 0x43;
@@ -252,6 +256,17 @@ impl EventVm {
                         return StepResult::Cancelled;
                     }
                     self.exec_pointer += 1;
+                }
+                // XiEvent ReqSet/GetReqStatus family: ask an actor to play a
+                // motion tag and wait for it to finish. This dialog-only VM has
+                // no actor choreography, so every request completes instantly —
+                // skip by documented size (research/XiEvents/OpCodes/0x0027.md
+                // through 0x002A.md). Sizes: 0x27/0x28/0x29 = 7, 0x2A = 6.
+                OP_REQSET | OP_REQSET_CHECKED | OP_REQSET_PRIORITY => {
+                    self.exec_pointer += 7;
+                }
+                OP_REQWAIT => {
+                    self.exec_pointer += 6;
                 }
                 _ => {
                     let meta = OPCODE_META.get(op as usize).copied();
