@@ -414,12 +414,13 @@ pub fn dispatch_movement_system(
             | InputMode::PassiveCursor(_)
     );
 
+    // Inverted vertical rotation (local preference): pitch keys flipped.
     let mut pitch_d = 0.0;
     if !in_picker && bindings.pressed(Action::CameraPitchUp, &keys) {
-        pitch_d += PITCH_STEP_HELD;
+        pitch_d -= PITCH_STEP_HELD;
     }
     if !in_picker && bindings.pressed(Action::CameraPitchDown, &keys) {
-        pitch_d -= PITCH_STEP_HELD;
+        pitch_d += PITCH_STEP_HELD;
     }
     if pitch_d != 0.0 {
         let (lo, hi) = match *camera_mode {
@@ -429,13 +430,14 @@ pub fn dispatch_movement_system(
         chase.pitch = (chase.pitch + pitch_d).clamp(lo, hi);
     }
 
+    // Inverted horizontal rotation (Alex's preference): left arrow orbits right.
     let mut yaw_d = 0.0;
     let yaw_step = CAMERA_YAW_RATE * time.delta_secs();
     if !in_picker && bindings.pressed(Action::CameraYawLeft, &keys) {
-        yaw_d -= yaw_step;
+        yaw_d += yaw_step;
     }
     if !in_picker && bindings.pressed(Action::CameraYawRight, &keys) {
-        yaw_d += yaw_step;
+        yaw_d -= yaw_step;
     }
     if yaw_d != 0.0 {
         chase.yaw += yaw_d;

@@ -109,8 +109,11 @@ pub fn compact2() -> Bindings {
     pairs.extend([
         (Action::MoveForward, KeyBind::new(KeyCode::KeyW)),
         (Action::MoveBackward, KeyBind::new(KeyCode::KeyS)),
-        (Action::TurnLeft, KeyBind::new(KeyCode::KeyA)),
-        (Action::TurnRight, KeyBind::new(KeyCode::KeyD)),
+        // Local preference: WoW-style — A/D strafe, Q/E turn.
+        (Action::StrafeLeft, KeyBind::new(KeyCode::KeyA)),
+        (Action::StrafeRight, KeyBind::new(KeyCode::KeyD)),
+        (Action::TurnLeft, KeyBind::new(KeyCode::KeyQ)),
+        (Action::TurnRight, KeyBind::new(KeyCode::KeyE)),
         (Action::RotateLeft, KeyBind::new(KeyCode::KeyQ)),
         (Action::RotateRight, KeyBind::new(KeyCode::KeyE)),
         (Action::CameraPitchUp, KeyBind::new(KeyCode::ArrowUp)),

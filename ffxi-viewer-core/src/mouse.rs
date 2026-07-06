@@ -118,9 +118,11 @@ pub fn mouse_camera_system(
     let mode = *camera_mode;
     let drag_active = pointer.left || pointer.right;
     if drag_active && pointer.delta != Vec2::ZERO {
-        chase.yaw += pointer.delta.x * MOUSE_YAW_SENS;
+        // Inverted horizontal rotation (local preference).
+        chase.yaw -= pointer.delta.x * MOUSE_YAW_SENS;
 
-        let pitch_d = -pointer.delta.y * MOUSE_PITCH_SENS;
+        // Inverted vertical rotation (local preference).
+        let pitch_d = pointer.delta.y * MOUSE_PITCH_SENS;
         let (lo, hi) = match mode {
             CameraMode::Chase => (ChaseCamera::PITCH_MIN, ChaseCamera::PITCH_MAX),
             CameraMode::FirstPerson => (ChaseCamera::FP_PITCH_MIN, ChaseCamera::FP_PITCH_MAX),

@@ -605,9 +605,15 @@ fn handle_sub_packet(
                         z: head.z,
                     };
                     let seed_pos = apply_zoneline_spawn_fallback(raw_pos, zoneline_spawn_fallback);
+                    // Take server speed updates (e.g. GM !speed) — but never a zero
+                    // from a partial packet, which would freeze local movement.
+                    let speed = if head.speed > 0 { head.speed } else { self_pos.speed };
+                    let speed_base = if head.speed_base > 0 { head.speed_base } else { self_pos.speed_base };
                     *self_pos = Position {
                         pos: seed_pos,
                         heading: head.dir,
+                        speed,
+                        speed_base,
                         ..*self_pos
                     };
 
