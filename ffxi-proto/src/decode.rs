@@ -450,11 +450,15 @@ pub struct CharStatus {
     /// Only meaningful while `server_status == animation::FISHING_START`. 0 if the packet
     /// was truncated before this field.
     pub fishing_timer: u8,
+    /// Movement speed (LSB `char_status.cpp` Flags1.Speed, 12 bits). Probed
+    /// live: GM `!speed 120` flips the u16 at +0x28 from 0x0032 to 0x0078.
+    pub speed: u16,
 }
 
 impl CharStatus {
     pub const UNIQUE_NO_OFFSET: usize = 0x20;
     pub const FLAGS0_OFFSET: usize = 0x24;
+    pub const SPEED_OFFSET: usize = 0x28;
     pub const SERVER_STATUS_OFFSET: usize = 0x2C;
     pub const DEAD_COUNTER1_OFFSET: usize = 0x38;
     pub const DEAD_COUNTER2_OFFSET: usize = 0x3C;
@@ -475,6 +479,8 @@ impl CharStatus {
             dead_counter2: rd(Self::DEAD_COUNTER2_OFFSET),
             server_status: body[Self::SERVER_STATUS_OFFSET],
             fishing_timer: body.get(Self::FISHING_TIMER_OFFSET).copied().unwrap_or(0),
+            speed: u16::from_le_bytes([body[Self::SPEED_OFFSET], body[Self::SPEED_OFFSET + 1]])
+                & 0x0FFF,
         })
     }
 
@@ -2279,6 +2285,7 @@ mod tests {
                 dead_counter2: 0,
                 server_status: 0,
                 fishing_timer: 0,
+                speed: 0,
             }
             .seconds_until_homepoint()
         };
