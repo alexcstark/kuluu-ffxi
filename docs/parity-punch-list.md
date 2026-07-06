@@ -13,8 +13,13 @@ see `ffxi-event/examples/event-probe.rs` for the event chain prober).
   inventory without touching the entity look / `EntityModel` signature path.
 
 - **Run animation persists after movement stops.** Stop moving → the self
-  character keeps the run cycle instead of returning to idle. Anim state machine
-  misses the stop transition (server anim byte lag or local intent not checked).
+  character keeps the run cycle instead of returning to idle. The pose comes
+  from `EntityMotion` smoothed velocity (tau 0.25s, hysteresis exit 0.35), so a
+  clean stop should idle within ~1s. Prime suspect for an indefinite run cycle:
+  the self-position rubber-band reconcile keeps micro-nudging the transform so
+  smoothed speed never crosses MOVE_EXIT — only self has prediction+reconcile,
+  which matches the bug affecting the player and not NPCs. Needs a live probe
+  of `MotionSample.speed` while standing still.
 
 - **Verify offhand/shield (sub slot) renders after relog** the way main hand
   does. `load_pc` receives `sub_weapon` separately and discards it
